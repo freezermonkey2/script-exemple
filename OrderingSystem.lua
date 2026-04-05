@@ -15,11 +15,11 @@ local redvelvet = gui.OrderFrame.ImageLabel.cookies:WaitForChild("redvelvetcooki
 local vanilla = gui.OrderFrame.ImageLabel.cookies:WaitForChild("vanillacookie")
 local sugarsprinkle = gui.OrderFrame.ImageLabel.cookies:WaitForChild("sugarsprinkle")
 local PeanutButterCookie = gui.OrderFrame.ImageLabel.cookies:WaitForChild("PeanutButterCookie")
-local orderSubmitButton = gui.OrderFrame.ImageLabel:WaitForChild("submit") -- Add the submit button here
+local orderSubmitButton = gui.OrderFrame.ImageLabel:WaitForChild("submit")
 local cupcakebutton = gui.OrderFrame.ImageLabel:WaitForChild("cupcakebutton")
 local cupcakes = gui.OrderFrame.ImageLabel:WaitForChild("cupcakes")
-local labelCount = 0 -- Keep track of the number of labels added
-local baseClicked = nil -- Track which base button (cookie or donut) was clicked
+local labelCount = 0
+local baseClicked = nil
 local OrderCompleteEvent = ReplicatedStorage:WaitForChild("OrderCompleteEvent")
 local Macaronsbutton = gui.OrderFrame.ImageLabel:WaitForChild("Macaronsbutton")
 local muffinbutton = gui.OrderFrame.ImageLabel:WaitForChild("muffinbutton")
@@ -40,50 +40,34 @@ local CloseTemplateEvent = ReplicatedStorage:WaitForChild("CloseTemplateGui")
 local claimEvent = ReplicatedStorage:WaitForChild("ClaimOrderEvent")
 local CloseOrderTemplateEvent = ReplicatedStorage:WaitForChild("CloseTemplateGui")
 local DisplayOrderFrame = ReplicatedStorage:WaitForChild("DisplayOrderFrame")
-local order = {} -- Store the order details
-
-
-
-
-
-
+local order = {}
 submitButton.MouseButton1Click:Connect(function()
 	local username = usernameInput.Text
 	VerifyUsernameEvent:FireServer(username)
 end)
-
 local function createFoodLabel(baseName, specificName)
 	if labelCount >= 3 then
 		print("Maximum number of labels reached!")
 		return
 	end
-
 	local textLabel = Instance.new("TextLabel")
 	if specificName then
-		textLabel.Text = baseName .. " " .. specificName -- Combine the base name with the specific name
+		textLabel.Text = baseName .. " " .. specificName 
 	else
-		textLabel.Text = baseName -- Use the base name
+		textLabel.Text = baseName
 	end
 	textLabel.BackgroundTransparency = 1
-	textLabel.Size = UDim2.new(0, 147, 0, 34) -- Adjust size as needed
+	textLabel.Size = UDim2.new(0, 147, 0, 34)
 	textLabel.Parent = gui.OrderFrame
-
-	-- Define specific positions for each slot
 	local positions = {
 		UDim2.new(6.12, 0, 1.33, 0),  -- Slot 1
 		UDim2.new(7.69, 0, 1.34, 0),  -- Slot 2
 		UDim2.new(9.233, 0, 1.34, 0)   -- Slot 3
 	}
-
-	-- Assign the position based on the current labelCount
 	textLabel.Position = positions[labelCount + 1]
-
 	labelCount = labelCount + 1
-
-	-- Add the item to the order
 	table.insert(order, textLabel.Text)
 end
-
 cookieButton.MouseButton1Click:Connect(function()
 	baseClicked = "Cookie"
 	if labelCount < 3 then
@@ -94,51 +78,38 @@ cookieButton.MouseButton1Click:Connect(function()
 		vanilla.Visible = true
 		PeanutButterCookie.title.Text = "PeanutButter"
 		PeanutButterCookie.Visible = true
-		
 		cookies.Visible = true
-		
 		cupcakes.chocolatecupcake.Visible = false
 		cupcakes.vanillacupcake.Visible = false
 		cupcakes.redvelvetcupcake.Visible = false
 		cupcakes.Visible = false
-		
 		donuts.chocolatedonut.Visible = false
 		donuts.vanilladonut.Visible = false
 		donuts.Visible = false
-		
 		Macarons.Visible = true
-
 		Macarons.CaramelMacaron.Visible = false
 		Macarons.LemonMacaron.Visible = false
 		Macarons.MintMacaron.Visible = false
 		Macarons.MochaMacaron.Visible = false
 		Macarons.StrawberryMacaron.Visible = false
-		
 		muffins.Visible = false
 		muffins.blueberrymuffin.Visible = false
 		muffins.Chocolatemuffin.Visible = false
 		muffins.cranberrymuffin.Visible = false
 		muffins.Vanillamuffin.Visible = false
-		
 		cakepops.Visible = false
 		cakepops.chocolatecakepop.Visible = false
 		cakepops.vanillacakepop.Visible = false
-		
 	else
 		print("You can only add up to 3 items.")
 	end
 end)
-
 cupcakebutton.MouseButton1Click:Connect(function()
 	baseClicked = "Cupcake"
-
-	-- Hide cookie and donut options
 	chocolatechipcookie.Visible = false
 	redvelvet.Visible = false
 	vanilla.Visible = false
 	PeanutButterCookie.Visible = false
-
-	-- Show all cupcake options
 	cupcakes.chocolatecupcake.Visible = true
 	cupcakes.vanillacupcake.Visible = true
 	cupcakes.redvelvetcupcake.title.Text = "Strawberry"
@@ -148,35 +119,27 @@ cupcakebutton.MouseButton1Click:Connect(function()
 	donuts.chocolatedonut.Visible = false
 	donuts.vanilladonut.Visible = false
 	donuts.Visible = false
-	
 	Macarons.Visible = false
-
 	Macarons.CaramelMacaron.Visible = false
 	Macarons.LemonMacaron.Visible = false
 	Macarons.MintMacaron.Visible = false
 	Macarons.MochaMacaron.Visible = false
 	Macarons.StrawberryMacaron.Visible = false
-	
 	muffins.Visible = false
 	muffins.blueberrymuffin.Visible = false
 	muffins.Chocolatemuffin.Visible = false
 	muffins.cranberrymuffin.Visible = false
 	muffins.Vanillamuffin.Visible = false
-	
 	cakepops.Visible = false
 	cakepops.chocolatecakepop.Visible = false
 	cakepops.vanillacakepop.Visible = false
 end)
-
-muffinbutton.MouseButton1Click:Connect(function()
-	baseClicked = "Muffin"
-
-	-- Hide cookie and donut options
+cakepopbutton.MouseButton1Click:Connect(function()
+	baseClicked = "Cakepop"
 	chocolatechipcookie.Visible = false
 	redvelvet.Visible = false
 	vanilla.Visible = false
 	PeanutButterCookie.Visible = false
-
 	cupcakes.chocolatecupcake.Visible = false
 	cupcakes.vanillacupcake.Visible = false
 	cupcakes.redvelvetcupcake.Visible = false
@@ -185,16 +148,53 @@ muffinbutton.MouseButton1Click:Connect(function()
 	donuts.chocolatedonut.Visible = false
 	donuts.vanilladonut.Visible = false
 	donuts.Visible = false
-
 	Macarons.Visible = false
-
 	Macarons.CaramelMacaron.Visible = false
 	Macarons.LemonMacaron.Visible = false
 	Macarons.MintMacaron.Visible = false
 	Macarons.MochaMacaron.Visible = false
 	Macarons.StrawberryMacaron.Visible = false
-	
-	muffins.Visible = true
-	muffins.blueberrymuffin.title.Text = "Blueberry"
-	muffins.blueberrymuffin.Visible = true
-	muffins.Chocolatemuffin.title.Text = "Chocolate"
+	muffins.Visible = false
+	muffins.blueberrymuffin.Visible = false
+	muffins.Chocolatemuffin.Visible = false
+	muffins.cranberrymuffin.Visible = false
+	muffins.Vanillamuffin.Visible = false
+	cakepops.Visible = true
+	cakepops.chocolatecakepop.Visible = true
+	cakepops.redvelvetcakepop.title.Text = "Strawberry"
+	cakepops.vanillacakepop.Visible = true
+end)
+cupcakes.chocolatecupcake.MouseButton1Click:Connect(function()
+	if not baseClicked then
+		print("Please click the cookie or donut button first.")
+		return
+	end
+	if labelCount < 3 then
+		createFoodLabel("Chocolate", baseClicked)
+	else
+		print("You can only add up to 3 items.")
+	end
+end)
+cakepops.chocolatecakepop.MouseButton1Click:Connect(function()
+	if not baseClicked then
+		print("Please click the cookie or donut button first.")
+		return
+	end
+	if labelCount < 3 then
+		createFoodLabel("Chocolate", baseClicked)
+	else
+		print("You can only add up to 3 items.")
+	end
+end)
+cakepops.redvelvetcakepop.MouseButton1Click:Connect(function()
+	if not baseClicked then
+		print("Please click the cookie or donut button first.")
+		return
+	end
+	if labelCount < 3 then
+		createFoodLabel("Strawberry", baseClicked)
+	else
+		print("You can only add up to 3 items.")
+	end
+end)
+muffins.blueberrymuffin.MouseButton1Click:Connect(function()
