@@ -1,200 +1,210 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local VerifyUsernameEvent = ReplicatedStorage:WaitForChild("VerifyUsername")
-local OrderBoardEvent = ReplicatedStorage:WaitForChild("OrderBoardEvent")
-local OrderSubmitted = ReplicatedStorage:WaitForChild("OrderSubmitted")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local gui = script.Parent
-local usernameInput = gui.NameFrame.ImageLable:WaitForChild("playername")
-local submitButton = gui.NameFrame.ImageLable:WaitForChild("enter")
-local nextFrame = gui:WaitForChild("OrderFrame")
-local cookieButton = gui.OrderFrame.ImageLabel:WaitForChild("cookiebutton")
-local donutButton = gui.OrderFrame.ImageLabel:WaitForChild("donutbutton")
-local chocolatechipcookie = gui.OrderFrame.ImageLabel.cookies:WaitForChild("chocolatechipcookie")
-local redvelvet = gui.OrderFrame.ImageLabel.cookies:WaitForChild("redvelvetcookie")
-local vanilla = gui.OrderFrame.ImageLabel.cookies:WaitForChild("vanillacookie")
-local sugarsprinkle = gui.OrderFrame.ImageLabel.cookies:WaitForChild("sugarsprinkle")
-local PeanutButterCookie = gui.OrderFrame.ImageLabel.cookies:WaitForChild("PeanutButterCookie")
-local orderSubmitButton = gui.OrderFrame.ImageLabel:WaitForChild("submit")
-local cupcakebutton = gui.OrderFrame.ImageLabel:WaitForChild("cupcakebutton")
-local cupcakes = gui.OrderFrame.ImageLabel:WaitForChild("cupcakes")
-local labelCount = 0
-local baseClicked = nil
-local OrderCompleteEvent = ReplicatedStorage:WaitForChild("OrderCompleteEvent")
-local Macaronsbutton = gui.OrderFrame.ImageLabel:WaitForChild("Macaronsbutton")
-local muffinbutton = gui.OrderFrame.ImageLabel:WaitForChild("muffinbutton")
-local muffins = gui.OrderFrame.ImageLabel:WaitForChild("muffins")
-local cookies = gui.OrderFrame.ImageLabel:WaitForChild("cookies")
-local cakepopbutton = gui.OrderFrame.ImageLabel:WaitForChild("Cakepopsbutton")
-local cakepops = gui.OrderFrame.ImageLabel:WaitForChild("Cakepops")
-local Macarons = gui.OrderFrame.ImageLabel:WaitForChild("Macarons")
-local OrderTemplate = script.Parent.OrderTemplate
-local chefframe = script.Parent:WaitForChild("ChefFrame")
-local chefraamebutton = chefframe.ImageLabel.ImageLabel.ScrollingFrame.template:WaitForChild("TextButton")
-local cheftextlable = chefframe.ImageLabel.ImageLabel.ScrollingFrame.template:WaitForChild("num")
-local chefclosebutton = script.Parent.ChefFrame.ImageLabel:WaitForChild("close")
-local giveToolsButton = OrderTemplate:WaitForChild("TextButton")
-local donuts = gui.OrderFrame.ImageLabel:WaitForChild("donuts")
-local CloseGuiEvent = ReplicatedStorage:WaitForChild("OrderEvent")
-local CloseTemplateEvent = ReplicatedStorage:WaitForChild("CloseTemplateGui")
-local claimEvent = ReplicatedStorage:WaitForChild("ClaimOrderEvent")
-local CloseOrderTemplateEvent = ReplicatedStorage:WaitForChild("CloseTemplateGui")
-local DisplayOrderFrame = ReplicatedStorage:WaitForChild("DisplayOrderFrame")
-local order = {}
-submitButton.MouseButton1Click:Connect(function()
-	local username = usernameInput.Text
-	VerifyUsernameEvent:FireServer(username)
-end)
-local function createFoodLabel(baseName, specificName)
-	if labelCount >= 3 then
-		print("Maximum number of labels reached!")
-		return
-	end
-	local textLabel = Instance.new("TextLabel")
-	if specificName then
-		textLabel.Text = baseName .. " " .. specificName 
-	else
-		textLabel.Text = baseName
-	end
-	textLabel.BackgroundTransparency = 1
-	textLabel.Size = UDim2.new(0, 147, 0, 34)
-	textLabel.Parent = gui.OrderFrame
-	local positions = {
-		UDim2.new(6.12, 0, 1.33, 0),  -- Slot 1
-		UDim2.new(7.69, 0, 1.34, 0),  -- Slot 2
-		UDim2.new(9.233, 0, 1.34, 0)   -- Slot 3
-	}
-	textLabel.Position = positions[labelCount + 1]
-	labelCount = labelCount + 1
-	table.insert(order, textLabel.Text)
+--[[
+    Hidden Developer Application Script
+    Author: Jacob
+    Description:
+        This script implements a small but complete "Daily Task" system.
+        It demonstrates:
+        ✦ Clean structure & separation of concerns
+        ✦ Use of Roblox services & RemoteEvents
+        ✦ Defensive programming (pcall, validation, debouncing)
+        ✦ Type annotations (Luau)
+        ✦ Clear comments & documentation
+--]]
+
+--// Services
+local Players: Players = game:GetService("Players")
+local ReplicatedStorage: ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService: RunService = game:GetService("RunService")
+
+--// Remote setup (created at runtime so the script is self-contained)
+local RemotesFolder: Folder = ReplicatedStorage:FindFirstChild("DailyTaskRemotes") or Instance.new("Folder")
+RemotesFolder.Name = "DailyTaskRemotes"
+RemotesFolder.Parent = ReplicatedStorage
+
+local TaskRequestEvent: RemoteEvent = RemotesFolder:FindFirstChild("RequestTasks") :: RemoteEvent
+if not TaskRequestEvent then
+    TaskRequestEvent = Instance.new("RemoteEvent")
+    TaskRequestEvent.Name = "RequestTasks"
+    TaskRequestEvent.Parent = RemotesFolder
 end
-cookieButton.MouseButton1Click:Connect(function()
-	baseClicked = "Cookie"
-	if labelCount < 3 then
-		chocolatechipcookie.Visible = true
-		redvelvet.title.Text = "Oatmeal"
-		redvelvet.Visible = true
-		vanilla.title.Text = "Sugar"
-		vanilla.Visible = true
-		PeanutButterCookie.title.Text = "PeanutButter"
-		PeanutButterCookie.Visible = true
-		cookies.Visible = true
-		cupcakes.chocolatecupcake.Visible = false
-		cupcakes.vanillacupcake.Visible = false
-		cupcakes.redvelvetcupcake.Visible = false
-		cupcakes.Visible = false
-		donuts.chocolatedonut.Visible = false
-		donuts.vanilladonut.Visible = false
-		donuts.Visible = false
-		Macarons.Visible = true
-		Macarons.CaramelMacaron.Visible = false
-		Macarons.LemonMacaron.Visible = false
-		Macarons.MintMacaron.Visible = false
-		Macarons.MochaMacaron.Visible = false
-		Macarons.StrawberryMacaron.Visible = false
-		muffins.Visible = false
-		muffins.blueberrymuffin.Visible = false
-		muffins.Chocolatemuffin.Visible = false
-		muffins.cranberrymuffin.Visible = false
-		muffins.Vanillamuffin.Visible = false
-		cakepops.Visible = false
-		cakepops.chocolatecakepop.Visible = false
-		cakepops.vanillacakepop.Visible = false
-	else
-		print("You can only add up to 3 items.")
-	end
-end)
-cupcakebutton.MouseButton1Click:Connect(function()
-	baseClicked = "Cupcake"
-	chocolatechipcookie.Visible = false
-	redvelvet.Visible = false
-	vanilla.Visible = false
-	PeanutButterCookie.Visible = false
-	cupcakes.chocolatecupcake.Visible = true
-	cupcakes.vanillacupcake.Visible = true
-	cupcakes.redvelvetcupcake.title.Text = "Strawberry"
-	cupcakes.redvelvetcupcake.Visible = true
-	cupcakes.Visible = true
-	cookies.Visible = false
-	donuts.chocolatedonut.Visible = false
-	donuts.vanilladonut.Visible = false
-	donuts.Visible = false
-	Macarons.Visible = false
-	Macarons.CaramelMacaron.Visible = false
-	Macarons.LemonMacaron.Visible = false
-	Macarons.MintMacaron.Visible = false
-	Macarons.MochaMacaron.Visible = false
-	Macarons.StrawberryMacaron.Visible = false
-	muffins.Visible = false
-	muffins.blueberrymuffin.Visible = false
-	muffins.Chocolatemuffin.Visible = false
-	muffins.cranberrymuffin.Visible = false
-	muffins.Vanillamuffin.Visible = false
-	cakepops.Visible = false
-	cakepops.chocolatecakepop.Visible = false
-	cakepops.vanillacakepop.Visible = false
-end)
-cakepopbutton.MouseButton1Click:Connect(function()
-	baseClicked = "Cakepop"
-	chocolatechipcookie.Visible = false
-	redvelvet.Visible = false
-	vanilla.Visible = false
-	PeanutButterCookie.Visible = false
-	cupcakes.chocolatecupcake.Visible = false
-	cupcakes.vanillacupcake.Visible = false
-	cupcakes.redvelvetcupcake.Visible = false
-	cupcakes.Visible = false
-	cookies.Visible = false
-	donuts.chocolatedonut.Visible = false
-	donuts.vanilladonut.Visible = false
-	donuts.Visible = false
-	Macarons.Visible = false
-	Macarons.CaramelMacaron.Visible = false
-	Macarons.LemonMacaron.Visible = false
-	Macarons.MintMacaron.Visible = false
-	Macarons.MochaMacaron.Visible = false
-	Macarons.StrawberryMacaron.Visible = false
-	muffins.Visible = false
-	muffins.blueberrymuffin.Visible = false
-	muffins.Chocolatemuffin.Visible = false
-	muffins.cranberrymuffin.Visible = false
-	muffins.Vanillamuffin.Visible = false
-	cakepops.Visible = true
-	cakepops.chocolatecakepop.Visible = true
-	cakepops.redvelvetcakepop.title.Text = "Strawberry"
-	cakepops.vanillacakepop.Visible = true
-end)
-cupcakes.chocolatecupcake.MouseButton1Click:Connect(function()
-	if not baseClicked then
-		print("Please click the cookie or donut button first.")
-		return
-	end
-	if labelCount < 3 then
-		createFoodLabel("Chocolate", baseClicked)
-	else
-		print("You can only add up to 3 items.")
-	end
-end)
-cakepops.chocolatecakepop.MouseButton1Click:Connect(function()
-	if not baseClicked then
-		print("Please click the cookie or donut button first.")
-		return
-	end
-	if labelCount < 3 then
-		createFoodLabel("Chocolate", baseClicked)
-	else
-		print("You can only add up to 3 items.")
-	end
-end)
-cakepops.redvelvetcakepop.MouseButton1Click:Connect(function()
-	if not baseClicked then
-		print("Please click the cookie or donut button first.")
-		return
-	end
-	if labelCount < 3 then
-		createFoodLabel("Strawberry", baseClicked)
-	else
-		print("You can only add up to 3 items.")
-	end
-end)
-muffins.blueberrymuffin.MouseButton1Click:Connect(function()
+
+local TaskCompleteEvent: RemoteEvent = RemotesFolder:FindFirstChild("CompleteTask") :: RemoteEvent
+if not TaskCompleteEvent then
+    TaskCompleteEvent = Instance.new("RemoteEvent")
+    TaskCompleteEvent.Name = "CompleteTask"
+    TaskCompleteEvent.Parent = RemotesFolder
+end
+
+local TaskUpdateEvent: RemoteEvent = RemotesFolder:FindFirstChild("TaskUpdate") :: RemoteEvent
+if not TaskUpdateEvent then
+    TaskUpdateEvent = Instance.new("RemoteEvent")
+    TaskUpdateEvent.Name = "TaskUpdate"
+    TaskUpdateEvent.Parent = RemotesFolder
+end
+
+--// Type definitions
+type TaskId = string
+
+type TaskDefinition = {
+    Id: TaskId,
+    DisplayName: string,
+    Description: string,
+    Goal: number,
+    RewardCoins: number,
+}
+
+type PlayerTaskState = {
+    Progress: number,
+    Completed: boolean,
+}
+
+type PlayerTaskData = {
+    Tasks: {[TaskId]: PlayerTaskState},
+    LastReset: number,
+}
+
+--// Configuration
+local DAILY_RESET_INTERVAL: number = 60 * 60 * 24 -- 24 hours in seconds
+local AUTO_SAVE_INTERVAL: number = 60 -- seconds
+
+local TASK_DEFINITIONS: {TaskDefinition} = {
+    {
+        Id = "collect_coins",
+        DisplayName = "Coin Collector",
+        Description = "Collect 25 coins around the map.",
+        Goal = 25,
+        RewardCoins = 50,
+    },
+    {
+        Id = "walk_distance",
+        DisplayName = "Explorer",
+        Description = "Walk 500 studs in the world.",
+        Goal = 500,
+        RewardCoins = 75,
+    },
+    {
+        Id = "play_time",
+        DisplayName = "Dedicated Player",
+        Description = "Stay in the game for 10 minutes.",
+        Goal = 600,
+        RewardCoins = 100,
+    },
+}
+
+--// Utility: quick lookup table for tasks by Id
+local TaskById: {[TaskId]: TaskDefinition} = {}
+for _, def in ipairs(TASK_DEFINITIONS) do
+    TaskById[def.Id] = def
+end
+
+--// Player data store (in-memory for demo; could be wired to DataStoreService)
+local PlayerTaskStore: {[Player] : PlayerTaskData} = {}
+
+--// Simple coin reward event (for demo only)
+local CoinRewardEvent: BindableEvent = Instance.new("BindableEvent")
+CoinRewardEvent.Name = "CoinRewardEvent"
+
+--[[
+    Initializes a player's daily tasks.
+    If they already have data and it's not expired, reuse it.
+    Otherwise, reset tasks.
+--]]
+local function initializePlayerData(player: Player)
+    local now: number = os.time()
+    local existing: PlayerTaskData? = PlayerTaskStore[player]
+
+    if existing and (now - existing.LastReset) < DAILY_RESET_INTERVAL then
+        -- Data is still valid; keep it
+        return
+    end
+
+    local newData: PlayerTaskData = {
+        Tasks = {},
+        LastReset = now,
+    }
+
+    for _, def in ipairs(TASK_DEFINITIONS) do
+        newData.Tasks[def.Id] = {
+            Progress = 0,
+            Completed = false,
+        }
+    end
+
+    PlayerTaskStore[player] = newData
+end
+
+--[[
+    Safely gets a player's task data.
+    Returns nil if not initialized (should not happen if we call initializePlayerData).
+--]]
+local function getPlayerData(player: Player): PlayerTaskData?
+    return PlayerTaskStore[player]
+end
+
+--[[
+    Sends the current task state to the client.
+    This is used when the player opens the Daily Task UI.
+--]]
+local function sendTasksToClient(player: Player)
+    local data: PlayerTaskData? = getPlayerData(player)
+    if not data then
+        return
+    end
+
+    -- Build a serializable table for the client
+    local payload = {
+        LastReset = data.LastReset,
+        Tasks = {},
+    }
+
+    for id, state in pairs(data.Tasks) do
+        local def: TaskDefinition? = TaskById[id]
+        if def then
+            table.insert(payload.Tasks, {
+                Id = id,
+                DisplayName = def.DisplayName,
+                Description = def.Description,
+                Goal = def.Goal,
+                Progress = state.Progress,
+                Completed = state.Completed,
+                RewardCoins = def.RewardCoins,
+            })
+        end
+    end
+
+    TaskUpdateEvent:FireClient(player, payload)
+end
+
+--[[
+    Increments progress for a given task.
+    Handles completion, rewards, and client updates.
+--]]
+local function incrementTaskProgress(player: Player, taskId: TaskId, amount: number)
+    local data: PlayerTaskData? = getPlayerData(player)
+    if not data then
+        return
+    end
+
+    local state: PlayerTaskState? = data.Tasks[taskId]
+    local def: TaskDefinition? = TaskById[taskId]
+
+    if not state or not def then
+        return
+    end
+
+    if state.Completed then
+        return -- already done
+    end
+
+    state.Progress += amount
+
+    if state.Progress >= def.Goal then
+        state.Progress = def.Goal
+        state.Completed = true
+
+        -- Reward the player (BindableEvent so this system is decoupled)
+        CoinRewardEvent:Fire(player, def.RewardCoins)
+    end
+
+    sendTasksToClient(player)
+end
