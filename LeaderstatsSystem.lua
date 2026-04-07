@@ -1,6 +1,6 @@
 --[[
     Hidden Developer Application Script
-    Author: Jacob
+    Author: freezermonkey1
     Description:
         This script implements a small but complete "Daily Task" system.
         It demonstrates:
